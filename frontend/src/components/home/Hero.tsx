@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Star, Zap } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { SmartImage } from '@/components/ui/SmartImage';
 
@@ -62,26 +62,6 @@ export function Hero() {
               alt="Featured pre-owned motorcycle"
               label="Inspected & ready to ride"
             />
-          </div>
-          <div className="absolute -left-4 bottom-8 hidden rounded-2xl border border-line bg-card p-4 shadow-soft sm:block">
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-success-soft text-success">
-                <Zap className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-sm font-bold">Live auctions</p>
-                <p className="text-xs text-ink-muted">Bid in real time</p>
-              </div>
-            </div>
-          </div>
-          <div className="absolute -right-3 top-8 hidden rounded-2xl border border-line bg-card p-4 shadow-soft sm:block">
-            <div className="flex items-center gap-3">
-              <Star className="h-5 w-5 fill-accent text-accent" />
-              <div>
-                <p className="text-sm font-bold">4.8/5 rating</p>
-                <p className="text-xs text-ink-muted">12,000+ happy riders</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
