@@ -3,6 +3,7 @@ import { Clock, Gavel, MapPin } from 'lucide-react';
 import type { Auction } from '@/types';
 import { formatINR } from '@/lib/format';
 import { AuctionBadge } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { CountdownInline } from './Countdown';
 
 export function AuctionCard({ auction }: { auction: Auction }) {
@@ -12,11 +13,7 @@ export function AuctionCard({ auction }: { auction: Auction }) {
   return (
     <article className="card-hover group flex flex-col overflow-hidden">
       <Link to={`/auctions/${auction.id}`} className="relative block aspect-[4/3] overflow-hidden bg-surface">
-        {primary ? (
-          <img src={primary.url} alt={v?.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        ) : (
-          <div className="grid h-full place-items-center text-ink-muted">No image</div>
-        )}
+        <SmartImage src={primary?.url} alt={v?.title} label={v ? `${v.brand} ${v.model}` : undefined} zoom />
         <div className="absolute left-3 top-3">
           <AuctionBadge status={auction.status} />
         </div>

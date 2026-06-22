@@ -19,7 +19,7 @@ export default function AdminCms() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">Content management</h1>
-      <div className="inline-flex gap-1 rounded-xl border border-line bg-white p-1">
+      <div className="inline-flex gap-1 rounded-xl border border-line bg-card p-1">
         {(['faqs', 'testimonials'] as Tab[]).map((t) => (
           <button
             key={t}

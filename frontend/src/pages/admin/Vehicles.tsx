@@ -9,6 +9,7 @@ import { getApiErrorMessage } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Pagination } from '@/components/ui/Pagination';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { formatINR } from '@/lib/format';
 import type { ListingStatus } from '@/types';
 
@@ -55,7 +56,7 @@ export default function AdminVehicles() {
             <button
               key={s || 'all'}
               onClick={() => { setStatus(s); setPage(1); }}
-              className={clsx('rounded-lg px-3 py-1.5 text-xs font-semibold', status === s ? 'bg-ink text-white' : 'bg-white text-ink-soft border border-line')}
+              className={clsx('rounded-lg px-3 py-1.5 text-xs font-semibold', status === s ? 'bg-night text-white' : 'bg-card text-ink-soft border border-line')}
             >
               {s || 'All'}
             </button>
@@ -80,7 +81,9 @@ export default function AdminVehicles() {
                 <tr key={v.id} className="hover:bg-surface/50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <img src={v.images?.[0]?.url} alt="" className="h-10 w-14 rounded object-cover" />
+                      <div className="h-10 w-14 shrink-0 overflow-hidden rounded">
+                        <SmartImage src={v.images?.[0]?.url} alt="" />
+                      </div>
                       <Link to={`/buy/${v.slug}`} className="font-semibold hover:text-brand">{v.title}</Link>
                     </div>
                   </td>
@@ -90,7 +93,7 @@ export default function AdminVehicles() {
                     <select
                       value={v.status}
                       onChange={(e) => moderate.mutate({ id: v.id, body: { status: e.target.value } })}
-                      className="rounded-lg border border-line bg-white px-2 py-1 text-xs font-semibold"
+                      className="rounded-lg border border-line bg-card px-2 py-1 text-xs font-semibold"
                     >
                       {['ACTIVE', 'PENDING', 'SOLD', 'ARCHIVED', 'REJECTED'].map((s) => (
                         <option key={s} value={s}>{s}</option>

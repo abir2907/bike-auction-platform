@@ -44,7 +44,7 @@ export default function AdminInquiries() {
             <button
               key={s || 'all'}
               onClick={() => { setStatus(s); setPage(1); }}
-              className={clsx('rounded-lg px-3 py-1.5 text-xs font-semibold', status === s ? 'bg-ink text-white' : 'border border-line bg-white text-ink-soft')}
+              className={clsx('rounded-lg px-3 py-1.5 text-xs font-semibold', status === s ? 'bg-night text-white' : 'border border-line bg-card text-ink-soft')}
             >
               {s || 'All'}
             </button>
@@ -69,7 +69,7 @@ export default function AdminInquiries() {
                 <select
                   value={inq.status}
                   onChange={(e) => update.mutate({ id: inq.id, s: e.target.value })}
-                  className="rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-semibold"
+                  className="rounded-lg border border-line bg-card px-2 py-1.5 text-xs font-semibold"
                 >
                   {['NEW', 'CONTACTED', 'CLOSED'].map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>

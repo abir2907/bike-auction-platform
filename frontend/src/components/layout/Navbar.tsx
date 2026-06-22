@@ -5,6 +5,7 @@ import { clsx } from 'clsx';
 import { useAuthStore } from '@/store/auth';
 import { Logo } from './Logo';
 import { LinkButton } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const links = [
   { to: '/buy', label: 'Buy' },
@@ -26,7 +27,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-line bg-card/90 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Logo />
 
@@ -48,6 +49,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {status === 'authenticated' && user ? (
             <>
               <LinkButton to="/dashboard/listings/new" variant="accent" size="sm">
@@ -65,7 +67,7 @@ export function Navbar() {
                 {menuOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                    <div className="animate-fade-up absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-white p-1.5 shadow-card">
+                    <div className="animate-fade-up absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-card p-1.5 shadow-card">
                       <MenuLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
                         Dashboard
                       </MenuLink>
@@ -103,14 +105,17 @@ export function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden" onClick={() => setMobileOpen((o) => !o)} aria-label="Toggle menu">
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button onClick={() => setMobileOpen((o) => !o)} aria-label="Toggle menu">
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="animate-fade-up border-t border-line bg-white md:hidden">
+        <div className="animate-fade-up border-t border-line bg-card md:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
             {links.map((l) => (
               <NavLink

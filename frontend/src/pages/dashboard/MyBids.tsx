@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Gavel, Trophy } from 'lucide-react';
 import { usersService } from '@/services/misc.service';
 import { EmptyState, AuctionBadge } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { PageLoader } from '@/components/ui/Spinner';
 import { formatINR } from '@/lib/format';
 import type { Auction } from '@/types';
@@ -36,7 +37,9 @@ export default function MyBids() {
             const v = auction.vehicle;
             return (
               <Link key={auction.id} to={`/auctions/${auction.id}`} className="card-hover flex items-center gap-4 p-4">
-                <img src={v?.images?.[0]?.url} alt="" className="h-16 w-24 rounded-lg object-cover" />
+                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg">
+                  <SmartImage src={v?.images?.[0]?.url} alt="" />
+                </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="truncate font-bold">{v?.title}</h3>

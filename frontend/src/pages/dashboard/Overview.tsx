@@ -5,6 +5,7 @@ import { vehiclesService } from '@/services/vehicles.service';
 import { usersService } from '@/services/misc.service';
 import { useAuthStore } from '@/store/auth';
 import { ListingBadge } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { formatINR } from '@/lib/format';
 
 export default function DashboardOverview() {
@@ -52,7 +53,9 @@ export default function DashboardOverview() {
           <ul className="mt-4 divide-y divide-line">
             {listings.slice(0, 5).map((v) => (
               <li key={v.id} className="flex items-center gap-3 py-3">
-                <img src={v.images?.[0]?.url} alt="" className="h-12 w-16 rounded-lg object-cover" />
+                <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg">
+                  <SmartImage src={v.images?.[0]?.url} alt="" />
+                </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{v.title}</p>
                   <p className="text-sm text-ink-muted">{formatINR(v.price)}</p>

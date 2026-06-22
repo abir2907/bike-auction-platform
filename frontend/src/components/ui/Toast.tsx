@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             role="status"
             className={clsx(
-              'animate-fade-up flex items-start gap-3 rounded-xl border bg-white p-3.5 shadow-card',
+              'animate-fade-up flex items-start gap-3 rounded-xl border bg-card p-3.5 shadow-card',
               t.type === 'success' && 'border-success/30',
               t.type === 'error' && 'border-danger/30',
               t.type === 'info' && 'border-line',

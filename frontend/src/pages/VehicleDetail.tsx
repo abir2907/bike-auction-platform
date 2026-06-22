@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/auth';
 import { PageLoader } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/Misc';
 import { VehicleCard } from '@/components/vehicles/VehicleCard';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Field';
 import { formatINR, formatKm, ownerLabel } from '@/lib/format';
@@ -276,7 +277,7 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
   return (
     <div className="card overflow-hidden">
       <div className="relative aspect-[16/10] bg-surface">
-        <img src={images[index]} alt={`${title} — photo ${index + 1}`} className="h-full w-full object-cover" />
+        <SmartImage src={images[index]} alt={`${title} — photo ${index + 1}`} label={title} />
         {images.length > 1 && (
           <>
             <button onClick={() => go(-1)} aria-label="Previous photo" className="absolute left-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-soft hover:scale-105">
@@ -285,7 +286,7 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
             <button onClick={() => go(1)} aria-label="Next photo" className="absolute right-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-soft hover:scale-105">
               <ChevronRight className="h-5 w-5" />
             </button>
-            <span className="absolute bottom-3 right-3 rounded-full bg-ink/70 px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="absolute bottom-3 right-3 rounded-full bg-night/70 px-2.5 py-1 text-xs font-semibold text-white">
               {index + 1} / {images.length}
             </span>
           </>
@@ -299,7 +300,7 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
               onClick={() => setIndex(i)}
               className={clsx('h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2', i === index ? 'border-brand' : 'border-transparent')}
             >
-              <img src={img} alt="" className="h-full w-full object-cover" />
+              <SmartImage src={img} alt="" />
             </button>
           ))}
         </div>

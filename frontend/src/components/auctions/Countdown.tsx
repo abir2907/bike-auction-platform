@@ -32,7 +32,7 @@ export function CountdownBoxes({ endTime }: { endTime: string }) {
   return (
     <div className="flex gap-2">
       {cells.map((cell) => (
-        <div key={cell.l} className={clsx('min-w-[58px] rounded-xl border px-2 py-2 text-center', urgent ? 'border-danger/40 bg-danger-soft' : 'border-line bg-white')}>
+        <div key={cell.l} className={clsx('min-w-[58px] rounded-xl border px-2 py-2 text-center', urgent ? 'border-danger/40 bg-danger-soft' : 'border-line bg-card')}>
           <p className={clsx('text-2xl font-extrabold tabular-nums', urgent && 'text-danger')}>{pad(cell.v)}</p>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-muted">{cell.l}</p>
         </div>

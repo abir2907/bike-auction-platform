@@ -43,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       <section className="container-page pb-16">
-        <div className="grid gap-4 rounded-2.5xl bg-ink p-8 text-white sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 rounded-2.5xl bg-night p-8 text-white sm:grid-cols-2 lg:grid-cols-4">
           {numbers.map(({ icon: Icon, label, value }) => (
             <div key={label} className="text-center">
               <Icon className="mx-auto h-7 w-7 text-accent" />
