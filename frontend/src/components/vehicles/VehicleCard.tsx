@@ -54,7 +54,7 @@ export function VehicleCard({ vehicle, saved, onToggleSave, view = 'grid' }: Pro
         </div>
 
         <Link to={href} className="mt-1.5">
-          <h3 className="line-clamp-1 text-base font-bold transition group-hover:text-brand">{vehicle.title}</h3>
+          <h3 className="line-clamp-1 text-base font-bold text-ink transition group-hover:text-brand">{vehicle.title}</h3>
         </Link>
 
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">

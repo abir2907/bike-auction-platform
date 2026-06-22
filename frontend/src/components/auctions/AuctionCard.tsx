@@ -31,7 +31,7 @@ export function AuctionCard({ auction }: { auction: Auction }) {
 
       <div className="flex flex-1 flex-col p-4">
         <Link to={`/auctions/${auction.id}`}>
-          <h3 className="line-clamp-1 text-base font-bold transition group-hover:text-brand">{v?.title}</h3>
+          <h3 className="line-clamp-1 text-base font-bold text-ink transition group-hover:text-brand">{v?.title}</h3>
         </Link>
         <p className="mt-1 flex items-center gap-1 text-xs text-ink-muted">
           <MapPin className="h-3.5 w-3.5" /> {v?.city} · {v?.year}
