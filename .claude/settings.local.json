@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c 'import sys; *)",
+      "WebFetch(domain:vutto.in)",
+      "WebFetch(domain:palette.site)",
+      "WebSearch",
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx jest *)",
+      "Bash(mkdir -p \"prisma/migrations/00000000000000_init\")",
+      "Read(//tmp/**)",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "Bash(cd /e/bike-auction-platform && find . -type f -not -path '*/node_modules/*' -not -path '*/dist/*' -not -path '*/.git/*' | sort | sed 's|^\\\\./||'; echo \"---\"; echo \"TOTAL SOURCE FILES: $\\(find . -type f -not -path '*/node_modules/*' -not -path '*/dist/*' | wc -l\\)\")",
+      "Bash(rm -f tsconfig.tsbuildinfo tsconfig.node.tsbuildinfo)",
+      "Bash(ls \"C:/Users/ABIR/.claude/projects/E--bike-auction-platform/memory/\")"
+    ]
+  }
+}

@@ -1,0 +1,322 @@
+// ──────────────────────────────────────────────────────────────────────────
+// Vutto Auctions — Prisma schema
+// PostgreSQL. Money is stored as Decimal(12,2). All ids are UUID v4.
+// ──────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum FuelType {
+  PETROL
+  ELECTRIC
+  HYBRID
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC // gearless scooters / e-bikes
+}
+
+enum ListingType {
+  SALE // fixed-price listing
+  AUCTION // sold via live auction
+}
+
+enum ListingStatus {
+  DRAFT // created, not yet submitted
+  PENDING // awaiting admin approval
+  ACTIVE // visible to buyers
+  SOLD // transaction completed
+  REJECTED // rejected by admin
+  ARCHIVED // hidden by owner/admin
+}
+
+enum AuctionStatus {
+  SCHEDULED // not started yet
+  LIVE // accepting bids
+  ENDED // time elapsed, winner being settled
+  SETTLED // winner confirmed / reserve evaluated
+  CANCELLED // cancelled by admin/seller
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+// ─── Identity & auth ─────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  phone         String?
+  passwordHash  String
+  role          Role     @default(USER)
+  avatarUrl     String?
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  listings       Vehicle[]            @relation("SellerListings")
+  bids           Bid[]
+  wonAuctions    Auction[]            @relation("AuctionWinner")
+  inquiries      Inquiry[]
+  savedVehicles  SavedVehicle[]
+  refreshTokens  RefreshToken[]
+  passwordResets PasswordResetToken[]
+  auditLogs      AuditLog[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique // sha-256 of the raw token; raw token never stored
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdByIp String?
+  userAgent String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ─── Catalogue ────────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id              String        @id @default(uuid())
+  slug            String        @unique
+  title           String
+  brand           String
+  model           String
+  variant         String?
+  year            Int
+  fuelType        FuelType      @default(PETROL)
+  transmission    Transmission  @default(MANUAL)
+  kmDriven        Int
+  ownerCount      Int           @default(1) // 1 = first owner
+  engineCapacityCc Int?
+  color           String?
+  registrationState String?
+  city            String
+  description     String
+  price           Decimal       @db.Decimal(12, 2) // asking/buy-now price
+  conditionScore  Int           @default(0) // 0-100 inspection score
+  listingType     ListingType   @default(SALE)
+  status          ListingStatus @default(PENDING)
+  featured        Boolean       @default(false)
+  viewCount       Int           @default(0)
+
+  sellerId String
+  seller   User   @relation("SellerListings", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  images    VehicleImage[]
+  auction   Auction?
+  inquiries Inquiry[]
+  savedBy   SavedVehicle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([listingType])
+  @@index([brand])
+  @@index([fuelType])
+  @@index([year])
+  @@index([price])
+  @@index([featured])
+  @@index([city])
+  @@map("vehicles")
+}
+
+model VehicleImage {
+  id        String  @id @default(uuid())
+  vehicleId String
+  url       String
+  isPrimary Boolean @default(false)
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("vehicle_images")
+}
+
+// ─── Auctions & bids ────────────────────────────────────────────────────────
+
+model Auction {
+  id               String        @id @default(uuid())
+  vehicleId        String        @unique
+  startingPrice    Decimal       @db.Decimal(12, 2)
+  reservePrice     Decimal?      @db.Decimal(12, 2) // hidden minimum to sell
+  bidIncrement     Decimal       @db.Decimal(12, 2) @default(500)
+  currentPrice     Decimal       @db.Decimal(12, 2) // highest valid bid (or starting)
+  startTime        DateTime
+  endTime          DateTime
+  antiSnipeSeconds Int           @default(30)
+  status           AuctionStatus @default(SCHEDULED)
+  totalBids        Int           @default(0)
+  reserveMet       Boolean       @default(false)
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  bids Bid[]
+
+  winnerId String?
+  winner   User?   @relation("AuctionWinner", fields: [winnerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([endTime])
+  @@index([startTime])
+  @@map("auctions")
+}
+
+model Bid {
+  id        String   @id @default(uuid())
+  auctionId String
+  bidderId  String
+  amount    Decimal  @db.Decimal(12, 2)
+  createdAt DateTime @default(now())
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  bidder  User    @relation(fields: [bidderId], references: [id], onDelete: Cascade)
+
+  @@index([auctionId, createdAt])
+  @@index([bidderId])
+  @@map("bids")
+}
+
+// ─── Leads / inquiries ────────────────────────────────────────────────────────
+
+model Inquiry {
+  id        String        @id @default(uuid())
+  vehicleId String
+  userId    String? // null for guest inquiries
+  name      String
+  email     String
+  phone     String
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId])
+  @@index([status])
+  @@map("inquiries")
+}
+
+model SavedVehicle {
+  id        String   @id @default(uuid())
+  userId    String
+  vehicleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleId])
+  @@index([userId])
+  @@map("saved_vehicles")
+}
+
+// ─── CMS ───────────────────────────────────────────────────────────────────────
+
+model Testimonial {
+  id          String   @id @default(uuid())
+  authorName  String
+  authorTitle String?
+  avatarUrl   String?
+  rating      Int      @default(5)
+  content     String
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model Faq {
+  id          String   @id @default(uuid())
+  question    String
+  answer      String
+  category    String?
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+// Generic key/value store for editable homepage blocks (hero, stats, why-us...)
+model SiteContent {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_content")
+}
+
+// ─── Observability / security ─────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String // e.g. AUTH_LOGIN, VEHICLE_CREATE, BID_PLACE
+  entity    String? // e.g. Vehicle, Auction
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

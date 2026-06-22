@@ -1,0 +1,35 @@
+# Render Blueprint — deploys the API as a Docker web service.
+# Create the Postgres separately on Neon and paste its pooled URL into
+# DATABASE_URL, or use a Render Postgres instance.
+#
+# Usage: in the Render dashboard, "New +" → "Blueprint" and point it at this repo.
+services:
+  - type: web
+    name: vutto-auctions-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: CLIENT_URL
+        sync: false # set to your Vercel URL, e.g. https://vutto-auctions.vercel.app
+      - key: API_PUBLIC_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false # Neon pooled connection string (sslmode=require)
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: true
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
