@@ -30,7 +30,7 @@ export function Hero() {
           </p>
 
           {/* Search */}
-          <div className="mt-8 flex max-w-lg items-center gap-2 rounded-2xl border border-line bg-card p-2 shadow-card">
+          <div className="mt-8 flex max-w-lg items-center gap-2 rounded-2xl border border-line bg-card p-2 shadow-soft">
             <Search className="ml-2 h-5 w-5 shrink-0 text-ink-muted" />
             <input
               value={q}
@@ -56,14 +56,14 @@ export function Hero() {
 
         {/* Visual */}
         <div className="animate-fade-up relative">
-          <div className="aspect-[4/3] overflow-hidden rounded-2.5xl border border-line bg-card shadow-card">
+          <div className="aspect-[4/3] overflow-hidden rounded-2.5xl border border-line bg-card shadow-soft">
             <SmartImage
               src="/bikes/hero.jpg"
               alt="Featured pre-owned motorcycle"
               label="Inspected & ready to ride"
             />
           </div>
-          <div className="absolute -left-4 bottom-8 hidden rounded-2xl border border-line bg-card p-4 shadow-card sm:block">
+          <div className="absolute -left-4 bottom-8 hidden rounded-2xl border border-line bg-card p-4 shadow-soft sm:block">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-success-soft text-success">
                 <Zap className="h-5 w-5" />
@@ -74,7 +74,7 @@ export function Hero() {
               </div>
             </div>
           </div>
-          <div className="absolute -right-3 top-8 hidden rounded-2xl border border-line bg-card p-4 shadow-card sm:block">
+          <div className="absolute -right-3 top-8 hidden rounded-2xl border border-line bg-card p-4 shadow-soft sm:block">
             <div className="flex items-center gap-3">
               <Star className="h-5 w-5 fill-accent text-accent" />
               <div>
