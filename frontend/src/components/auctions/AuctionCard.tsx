@@ -17,14 +17,14 @@ export function AuctionCard({ auction }: { auction: Auction }) {
         <div className="absolute left-3 top-3">
           <AuctionBadge status={auction.status} />
         </div>
-        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs shadow-soft backdrop-blur">
-          <Clock className="h-3.5 w-3.5 text-ink-muted" />
+        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-night/75 px-3 py-1 text-xs text-white shadow-soft backdrop-blur">
+          <Clock className="h-3.5 w-3.5 text-white/80" />
           {auction.status === 'SCHEDULED' ? (
             <CountdownInline endTime={auction.startTime} prefix="Starts in " />
           ) : auction.status === 'LIVE' ? (
             <CountdownInline endTime={auction.endTime} />
           ) : (
-            <span className="font-semibold text-ink-muted">Closed</span>
+            <span className="font-semibold text-white/80">Closed</span>
           )}
         </div>
       </Link>
