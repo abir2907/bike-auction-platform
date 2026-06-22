@@ -8,10 +8,12 @@ function pad(n: number) {
 /** Compact "02:14:33" style countdown used on auction cards. */
 export function CountdownInline({ endTime, prefix }: { endTime: string; prefix?: string }) {
   const c = useCountdown(endTime);
-  if (c.isOver) return <span className="font-semibold text-ink-muted">Ended</span>;
+  // Colour is inherited from the surrounding chip so it reads correctly on
+  // both light and dark pills; only the urgent state forces its own colour.
+  if (c.isOver) return <span className="font-semibold">Ended</span>;
   const urgent = c.totalMs < 60_000;
   return (
-    <span className={clsx('font-bold tabular-nums', urgent ? 'text-danger' : 'text-ink')}>
+    <span className={clsx('font-bold tabular-nums', urgent && 'text-danger')}>
       {prefix}
       {c.days > 0 && `${c.days}d `}
       {pad(c.hours)}:{pad(c.minutes)}:{pad(c.seconds)}
