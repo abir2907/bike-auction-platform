@@ -52,15 +52,20 @@ export default function DashboardOverview() {
         ) : (
           <ul className="mt-4 divide-y divide-line">
             {listings.slice(0, 5).map((v) => (
-              <li key={v.id} className="flex items-center gap-3 py-3">
-                <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg">
-                  <SmartImage src={v.images?.[0]?.url} alt="" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{v.title}</p>
-                  <p className="text-sm text-ink-muted">{formatINR(v.price)}</p>
-                </div>
-                <ListingBadge status={v.status} />
+              <li key={v.id}>
+                <Link
+                  to={v.status === 'ACTIVE' ? `/buy/${v.slug}` : `/dashboard/listings/${v.id}/edit`}
+                  className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-3 transition hover:bg-surface"
+                >
+                  <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg">
+                    <SmartImage src={v.images?.[0]?.url} alt="" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{v.title}</p>
+                    <p className="text-sm text-ink-muted">{formatINR(v.price)}</p>
+                  </div>
+                  <ListingBadge status={v.status} />
+                </Link>
               </li>
             ))}
           </ul>

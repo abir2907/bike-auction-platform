@@ -10,8 +10,8 @@
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('theme');
-          if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          // Default to light; only go dark if the user explicitly chose it.
+          if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch (e) {}

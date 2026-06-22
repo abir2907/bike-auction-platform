@@ -17,9 +17,6 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-cream">
-      <div className="absolute -right-32 -top-32 h-[28rem] w-[28rem] rounded-full bg-brand/10 blur-3xl" />
-      <div className="absolute -bottom-40 -left-32 h-[28rem] w-[28rem] rounded-full bg-accent/10 blur-3xl" />
-
       <div className="container-page relative grid gap-10 py-16 lg:grid-cols-2 lg:items-center lg:py-24">
         <div className="animate-fade-up">
           <span className="badge-brand">
@@ -61,7 +58,7 @@ export function Hero() {
         <div className="animate-fade-up relative">
           <div className="aspect-[4/3] overflow-hidden rounded-2.5xl border border-line bg-card shadow-card">
             <SmartImage
-              src="https://loremflickr.com/1024/768/motorcycle?lock=7"
+              src="/bikes/hero.jpg"
               alt="Featured pre-owned motorcycle"
               label="Inspected & ready to ride"
             />

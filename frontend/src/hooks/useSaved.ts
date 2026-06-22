@@ -8,10 +8,12 @@ import { useToast } from '@/components/ui/Toast';
  * toggle. No-ops gracefully for logged-out users (prompts via toast).
  */
 export function useSaved() {
-  const { status } = useAuthStore();
+  const { status, user } = useAuthStore();
   const qc = useQueryClient();
   const toast = useToast();
-  const enabled = status === 'authenticated';
+  const isAdmin = user?.role === 'ADMIN';
+  // Admins are staff, not buyers — they don't save bikes.
+  const enabled = status === 'authenticated' && !isAdmin;
 
   const { data: saved = [] } = useQuery({
     queryKey: ['saved'],
@@ -31,8 +33,12 @@ export function useSaved() {
   });
 
   const toggle = (vehicleId: string) => {
-    if (!enabled) {
+    if (status !== 'authenticated') {
       toast('Log in to save bikes', 'info');
+      return;
+    }
+    if (isAdmin) {
+      toast('Admin accounts cannot save bikes', 'info');
       return;
     }
     mutation.mutate(vehicleId);

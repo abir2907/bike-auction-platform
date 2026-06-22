@@ -1,6 +1,7 @@
 import { Outlet, Link } from 'react-router-dom';
 import { ShieldCheck, Gavel, BadgeCheck } from 'lucide-react';
 import { Logo } from './Logo';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 /** Split-screen layout for auth pages: brand panel + form. */
 export function AuthLayout() {
@@ -12,7 +13,7 @@ export function AuthLayout() {
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
         <Logo className="relative [&_span:last-child]:text-white" />
         <div className="relative">
-          <h2 className="max-w-md text-4xl font-extrabold leading-tight">
+          <h2 className="max-w-md text-4xl font-extrabold leading-tight text-white">
             The trusted way to buy & sell pre-owned two-wheelers.
           </h2>
           <ul className="mt-8 space-y-4 text-white/80">
@@ -28,11 +29,17 @@ export function AuthLayout() {
       <div className="flex flex-col">
         <div className="flex items-center justify-between p-6 lg:hidden">
           <Logo />
-          <Link to="/" className="text-sm font-semibold text-ink-muted">
-            ← Home
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link to="/" className="text-sm font-semibold text-ink-muted">
+              ← Home
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-1 items-center justify-center px-6 py-10">
+        <div className="hidden justify-end p-6 lg:flex">
+          <ThemeToggle />
+        </div>
+        <div className="flex flex-1 items-center justify-center px-6 py-10 lg:pt-0">
           <div className="w-full max-w-md">
             <Outlet />
           </div>

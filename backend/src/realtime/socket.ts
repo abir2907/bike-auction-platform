@@ -72,6 +72,9 @@ export function initSocket(httpServer: HttpServer): Server {
           if (!payload || typeof payload.amount !== 'number' || !payload.auctionId) {
             throw ApiError.badRequest('Invalid bid payload');
           }
+          if (user.role === 'ADMIN') {
+            throw ApiError.forbidden('Admins cannot place bids');
+          }
           const result = await auctionService.placeBid(payload.auctionId, user.id, payload.amount);
           broadcastBid(result);
           audit({

@@ -9,6 +9,7 @@ import { cmsService } from '@/services/misc.service';
 import { vehiclesService } from '@/services/vehicles.service';
 import { VehicleCard, VehicleCardSkeleton } from '@/components/vehicles/VehicleCard';
 import { RatingStars } from '@/components/ui/Misc';
+import { Avatar } from '@/components/ui/Avatar';
 import { formatNumber } from '@/lib/format';
 
 export function FeaturedVehicles() {
@@ -79,7 +80,7 @@ export function Stats() {
   ];
   return (
     <section className="section container-page">
-      <div className="grid gap-4 rounded-2.5xl bg-night p-8 text-white sm:grid-cols-2 lg:grid-cols-4 lg:p-10">
+      <div className="grid gap-4 rounded-2.5xl bg-gradient-to-br from-brand via-brand-600 to-brand-700 p-8 text-white shadow-lifted sm:grid-cols-2 lg:grid-cols-4 lg:p-10">
         {items.map(({ icon: Icon, label, value, suffix }) => (
           <div key={label} className="flex items-center gap-4">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-accent">
@@ -144,9 +145,7 @@ export function Testimonials() {
             <RatingStars rating={t.rating} />
             <blockquote className="mt-4 flex-1 text-ink-soft">“{t.content}”</blockquote>
             <figcaption className="mt-5 flex items-center gap-3 border-t border-line pt-4">
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-700 font-bold text-white">
-                {t.authorName.charAt(0)}
-              </span>
+              <Avatar src={t.avatarUrl} name={t.authorName} className="h-11 w-11 rounded-full" />
               <div>
                 <p className="text-sm font-bold">{t.authorName}</p>
                 {t.authorTitle && <p className="text-xs text-ink-muted">{t.authorTitle}</p>}
@@ -212,7 +211,7 @@ export function CtaBanner() {
           <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-semibold backdrop-blur">
             <Zap className="h-3.5 w-3.5" /> Get started in minutes
           </span>
-          <h2 className="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">Ready to find your next ride?</h2>
+          <h2 className="mt-5 text-3xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl">Ready to find your next ride?</h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/85 sm:text-lg">
             Browse 200-point inspected bikes or list yours in minutes — and join thousands of riders buying and selling smarter on Vutto.
           </p>
