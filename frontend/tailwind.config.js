@@ -1,11 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Derived from Vutto's live palette (see ASSUMPTIONS.md).
-        ink: { DEFAULT: '#222222', soft: '#444444', muted: '#767676' },
+        // Surfaces & text are CSS-variable driven so the whole app re-themes
+        // when the `.dark` class is toggled on <html>. Brand/accent/state
+        // colours stay fixed (they read well on both light and dark surfaces).
+        ink: {
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          soft: 'rgb(var(--ink-soft) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+        },
+        cream: 'rgb(var(--cream) / <alpha-value>)',
+        surface: 'rgb(var(--surface) / <alpha-value>)',
+        base: 'rgb(var(--base) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)',
+        line: {
+          DEFAULT: 'rgb(var(--line) / <alpha-value>)',
+          strong: 'rgb(var(--line-strong) / <alpha-value>)',
+        },
+        night: '#16191f',
         brand: {
           DEFAULT: '#0050FF',
           600: '#0047E0',
@@ -18,9 +34,6 @@ export default {
         success: { DEFAULT: '#12AA00', soft: '#E9F8E6' },
         danger: { DEFAULT: '#FF2929', soft: '#FFECEC' },
         pink: { DEFAULT: '#D23657' },
-        cream: '#F0EFEB',
-        surface: '#F5F5F5',
-        line: { DEFAULT: '#EBEBEB', strong: '#DEDEDE' },
       },
       fontFamily: {
         display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],

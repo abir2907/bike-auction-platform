@@ -6,6 +6,7 @@ import { vehiclesService } from '@/services/vehicles.service';
 import { useToast } from '@/components/ui/Toast';
 import { getApiErrorMessage } from '@/lib/api';
 import { ListingBadge, EmptyState } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -48,7 +49,9 @@ export default function MyListings() {
         <div className="space-y-3">
           {listings.map((v) => (
             <div key={v.id} className="card flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-              <img src={v.images?.[0]?.url} alt="" className="h-24 w-full rounded-xl object-cover sm:w-36" />
+              <div className="h-24 w-full shrink-0 overflow-hidden rounded-xl sm:w-36">
+                <SmartImage src={v.images?.[0]?.url} alt="" label={`${v.brand} ${v.model}`} />
+              </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="truncate font-bold">{v.title}</h3>

@@ -4,6 +4,7 @@ import { clsx } from 'clsx';
 import type { Vehicle } from '@/types';
 import { formatINR, formatKm, ownerLabel } from '@/lib/format';
 import { AuctionBadge } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 
 interface Props {
   vehicle: Vehicle;
@@ -21,16 +22,7 @@ export function VehicleCard({ vehicle, saved, onToggleSave, view = 'grid' }: Pro
   return (
     <article className={clsx('card-hover group flex overflow-hidden', view === 'grid' ? 'flex-col' : 'flex-col sm:flex-row')}>
       <Link to={href} className={clsx('relative block overflow-hidden bg-surface', view === 'grid' ? 'aspect-[4/3]' : 'aspect-[4/3] sm:w-64 sm:shrink-0')}>
-        {primary ? (
-          <img
-            src={primary.url}
-            alt={vehicle.title}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="grid h-full place-items-center text-ink-muted">No image</div>
-        )}
+        <SmartImage src={primary?.url} alt={vehicle.title} label={`${vehicle.brand} ${vehicle.model}`} zoom />
         <div className="absolute left-3 top-3 flex gap-2">
           {isAuction ? <AuctionBadge status={vehicle.auction!.status} /> : null}
           {vehicle.featured && !isAuction && <span className="badge-accent">Featured</span>}
@@ -76,7 +68,9 @@ export function VehicleCard({ vehicle, saved, onToggleSave, view = 'grid' }: Pro
             {isAuction && <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">Current bid</p>}
             <p className="text-xl font-extrabold text-ink">{formatINR(price)}</p>
           </div>
-          <span className="btn-outline btn-sm">{isAuction ? 'Bid now' : 'View'}</span>
+          <Link to={href} className="btn-outline btn-sm">
+            {isAuction ? 'Bid now' : 'View'}
+          </Link>
         </div>
       </div>
     </article>

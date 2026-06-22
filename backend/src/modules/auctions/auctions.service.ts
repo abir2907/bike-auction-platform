@@ -87,7 +87,10 @@ export async function placeBid(
 
   const updatedId = await prisma.$transaction(async (tx) => {
     // Acquire the lock; the row stays locked until this transaction commits.
-    await tx.$queryRaw`SELECT id FROM auctions WHERE id = ${auctionId}::uuid FOR UPDATE`;
+    // NOTE: the `id` column is TEXT (Prisma String id), so we compare against a
+    // text parameter — casting to ::uuid here would raise "operator does not
+    // exist: text = uuid".
+    await tx.$queryRaw`SELECT id FROM auctions WHERE id = ${auctionId} FOR UPDATE`;
 
     const auction = await tx.auction.findUnique({
       where: { id: auctionId },

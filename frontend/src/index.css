@@ -5,12 +5,33 @@
 @layer base {
   :root {
     color-scheme: light;
+    --base: 255 255 255;
+    --card: 255 255 255;
+    --ink: 34 34 34;
+    --ink-soft: 68 68 68;
+    --ink-muted: 118 118 118;
+    --cream: 240 239 235;
+    --surface: 245 245 245;
+    --line: 235 235 235;
+    --line-strong: 222 222 222;
+  }
+  .dark {
+    color-scheme: dark;
+    --base: 11 13 16;
+    --card: 28 32 39;
+    --ink: 237 240 244;
+    --ink-soft: 198 204 213;
+    --ink-muted: 148 156 168;
+    --cream: 15 18 22;
+    --surface: 21 24 29;
+    --line: 42 47 55;
+    --line-strong: 56 62 72;
   }
   html {
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white text-ink font-sans antialiased;
+    @apply bg-base text-ink font-sans antialiased;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4, h5 {
@@ -21,7 +42,7 @@
   }
   /* Subtle, branded focus ring for accessibility */
   :focus-visible {
-    @apply outline-none ring-2 ring-brand/60 ring-offset-2 ring-offset-white rounded-lg;
+    @apply outline-none ring-2 ring-brand/60 ring-offset-2 ring-offset-base rounded-lg;
   }
 }
 
@@ -42,10 +63,10 @@
     @apply btn bg-accent text-white shadow-soft hover:bg-accent-600 active:translate-y-px;
   }
   .btn-dark {
-    @apply btn bg-ink text-white hover:bg-black active:translate-y-px;
+    @apply btn bg-night text-white hover:bg-black active:translate-y-px;
   }
   .btn-outline {
-    @apply btn border border-line-strong bg-white text-ink hover:border-brand hover:text-brand;
+    @apply btn border border-line-strong bg-card text-ink hover:border-brand hover:text-brand;
   }
   .btn-ghost {
     @apply btn text-ink-soft hover:bg-surface;
@@ -62,7 +83,7 @@
 
   /* Surfaces --------------------------------------------------------------- */
   .card {
-    @apply rounded-card border border-line bg-white shadow-soft;
+    @apply rounded-card border border-line bg-card shadow-soft;
   }
   .card-hover {
     @apply card transition-all duration-300 hover:-translate-y-1 hover:shadow-card;
@@ -73,7 +94,7 @@
     @apply mb-1.5 block text-sm font-medium text-ink-soft;
   }
   .input {
-    @apply w-full rounded-xl border border-line-strong bg-white px-4 py-2.5 text-sm text-ink
+    @apply w-full rounded-xl border border-line-strong bg-card px-4 py-2.5 text-sm text-ink
            placeholder:text-ink-muted/70 transition focus:border-brand focus:ring-2 focus:ring-brand/30;
   }
   .input-error {

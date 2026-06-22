@@ -13,7 +13,7 @@ export default function AdminDashboard() {
     { label: 'Total users', value: formatNumber(m.totalUsers), icon: Users, color: 'bg-brand-50 text-brand' },
     { label: 'Active listings', value: formatNumber(m.activeVehicles), icon: Bike, color: 'bg-accent-soft text-accent-600' },
     { label: 'Total inquiries', value: formatNumber(m.totalInquiries), icon: MessageSquare, color: 'bg-success-soft text-success' },
-    { label: 'GMV (settled)', value: formatINR(m.grossMerchandiseValue, { compact: true }), icon: IndianRupee, color: 'bg-ink/5 text-ink' },
+    { label: 'GMV (settled)', value: formatINR(m.grossMerchandiseValue, { compact: true }), icon: IndianRupee, color: 'bg-night/5 text-ink' },
   ];
   const sub = [
     { label: 'Live auctions', value: m.liveAuctions, icon: Gavel },

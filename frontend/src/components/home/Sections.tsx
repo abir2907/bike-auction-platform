@@ -79,7 +79,7 @@ export function Stats() {
   ];
   return (
     <section className="section container-page">
-      <div className="grid gap-4 rounded-2.5xl bg-ink p-8 text-white sm:grid-cols-2 lg:grid-cols-4 lg:p-10">
+      <div className="grid gap-4 rounded-2.5xl bg-night p-8 text-white sm:grid-cols-2 lg:grid-cols-4 lg:p-10">
         {items.map(({ icon: Icon, label, value, suffix }) => (
           <div key={label} className="flex items-center gap-4">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-accent">
@@ -144,13 +144,9 @@ export function Testimonials() {
             <RatingStars rating={t.rating} />
             <blockquote className="mt-4 flex-1 text-ink-soft">“{t.content}”</blockquote>
             <figcaption className="mt-5 flex items-center gap-3 border-t border-line pt-4">
-              {t.avatarUrl ? (
-                <img src={t.avatarUrl} alt="" className="h-10 w-10 rounded-full object-cover" />
-              ) : (
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-50 font-bold text-brand">
-                  {t.authorName.charAt(0)}
-                </span>
-              )}
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-700 font-bold text-white">
+                {t.authorName.charAt(0)}
+              </span>
               <div>
                 <p className="text-sm font-bold">{t.authorName}</p>
                 {t.authorTitle && <p className="text-xs text-ink-muted">{t.authorTitle}</p>}
@@ -202,18 +198,32 @@ export function Faqs() {
 export function CtaBanner() {
   return (
     <section className="container-page py-16">
-      <div className="relative overflow-hidden rounded-2.5xl bg-brand px-8 py-12 text-center text-white lg:px-16 lg:py-16">
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-accent/30 blur-2xl" />
-        <h2 className="relative text-3xl font-extrabold sm:text-4xl">Ready to find your next ride?</h2>
-        <p className="relative mx-auto mt-3 max-w-xl text-white/80">
-          Browse inspected bikes or list yours in minutes. Join thousands of riders who buy and sell smarter on Vutto.
-        </p>
-        <div className="relative mt-8 flex flex-wrap justify-center gap-3">
-          <Link to="/buy" className="btn bg-white text-brand hover:bg-white/90">Browse bikes</Link>
-          <Link to="/dashboard/listings/new" className="btn border border-white/40 text-white hover:bg-white/10">
-            Sell your bike
-          </Link>
+      <div className="relative overflow-hidden rounded-2.5xl bg-gradient-to-br from-brand via-brand-600 to-[#0a2470] px-6 py-14 text-center text-white shadow-lifted lg:px-16 lg:py-20">
+        {/* soft glow orbs */}
+        <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-brand-light/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+        {/* dotted grid texture */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.08]"
+          style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '22px 22px' }}
+        />
+
+        <div className="relative mx-auto max-w-2xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-semibold backdrop-blur">
+            <Zap className="h-3.5 w-3.5" /> Get started in minutes
+          </span>
+          <h2 className="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">Ready to find your next ride?</h2>
+          <p className="mx-auto mt-4 max-w-xl text-base text-white/85 sm:text-lg">
+            Browse 200-point inspected bikes or list yours in minutes — and join thousands of riders buying and selling smarter on Vutto.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link to="/buy" className="btn rounded-xl bg-white px-6 text-brand-700 shadow-soft hover:bg-white/90">
+              Browse bikes <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/dashboard/listings/new" className="btn rounded-xl border border-white/40 px-6 text-white hover:bg-white/10">
+              Sell your bike
+            </Link>
+          </div>
         </div>
       </div>
     </section>

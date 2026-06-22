@@ -30,7 +30,7 @@ export default function AuctionsPage() {
           <p className="mt-1 text-ink-muted">Bid in real time on inspected bikes. Highest bid above reserve wins.</p>
         </header>
 
-        <div className="mb-6 inline-flex gap-1 rounded-xl border border-line bg-white p-1">
+        <div className="mb-6 inline-flex gap-1 rounded-xl border border-line bg-card p-1">
           {tabs.map((t) => (
             <button
               key={t.key}

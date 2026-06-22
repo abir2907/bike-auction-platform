@@ -33,7 +33,7 @@ export function AdminLayout() {
                   className={({ isActive }) =>
                     clsx(
                       'flex shrink-0 items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition',
-                      isActive ? 'bg-ink text-white' : 'text-ink-soft hover:bg-surface',
+                      isActive ? 'bg-night text-white' : 'text-ink-soft hover:bg-surface',
                     )
                   }
                 >

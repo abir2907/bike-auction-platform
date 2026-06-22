@@ -45,7 +45,7 @@ export default function AdminUsers() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-extrabold">Users</h1>
-        <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3">
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-card px-3">
           <Search className="h-4 w-4 text-ink-muted" />
           <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search name or email" className="bg-transparent py-2.5 text-sm outline-none" />
         </div>

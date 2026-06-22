@@ -57,7 +57,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
-        <select ref={ref} id={inputId} className={clsx('input appearance-none bg-white', error && 'input-error', className)} {...props}>
+        <select ref={ref} id={inputId} className={clsx('input appearance-none bg-card', error && 'input-error', className)} {...props}>
           {options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}

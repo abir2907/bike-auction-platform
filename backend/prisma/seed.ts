@@ -9,7 +9,15 @@ const prisma = new PrismaClient();
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@vutto.local';
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || 'Admin@12345';
 
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/1024/768`;
+// Deterministic real motorcycle photos (keyword + stable `lock` per seed).
+// If the network blocks this host, the frontend's <SmartImage> falls back to a
+// branded gradient so listings never look broken.
+const hashSeed = (s: string) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return (h % 95) + 1;
+};
+const img = (seed: string) => `https://loremflickr.com/1024/768/motorcycle?lock=${hashSeed(seed)}`;
 const slugify = (t: string) =>
   `${t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50)}-${Math.random()
     .toString(36)

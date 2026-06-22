@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/auth';
 import { useToast } from '@/components/ui/Toast';
 import { PageLoader } from '@/components/ui/Spinner';
 import { EmptyState, AuctionBadge } from '@/components/ui/Misc';
+import { SmartImage } from '@/components/ui/SmartImage';
 import { Button } from '@/components/ui/Button';
 import { CountdownBoxes } from '@/components/auctions/Countdown';
 import { formatINR, timeAgo } from '@/lib/format';
@@ -145,13 +146,15 @@ export default function AuctionDetailPage() {
           <div className="space-y-6">
             <div className="card overflow-hidden">
               <div className="relative aspect-[16/10] bg-surface">
-                {primary && <img src={primary.url} alt={v.title} className="h-full w-full object-cover" />}
-                <div className="absolute left-3 top-3"><AuctionBadge status={statusVal as never} /></div>
+                <SmartImage src={primary?.url} alt={v.title} label={`${v.brand} ${v.model}`} />
+                <div className="absolute left-3 top-3 z-10"><AuctionBadge status={statusVal as never} /></div>
               </div>
               {v.images.length > 1 && (
                 <div className="no-scrollbar flex gap-2 overflow-x-auto p-3">
                   {v.images.slice(0, 6).map((img) => (
-                    <img key={img.id} src={img.url} alt="" className="h-16 w-20 shrink-0 rounded-lg object-cover" />
+                    <div key={img.id} className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
+                      <SmartImage src={img.url} alt="" />
+                    </div>
                   ))}
                 </div>
               )}
@@ -181,7 +184,7 @@ export default function AuctionDetailPage() {
               </div>
 
               {/* Current price */}
-              <div className="mt-4 rounded-2xl bg-ink p-5 text-white">
+              <div className="mt-4 rounded-2xl bg-night p-5 text-white">
                 <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
                   {totalBids > 0 ? 'Current highest bid' : 'Starting price'}
                 </p>
