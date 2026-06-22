@@ -49,14 +49,22 @@ export function SmartImage({ src, alt = '', label, className, zoom }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  // Only show the branded placeholder when there is no usable photo yet —
+  // i.e. no src, the image errored, or it hasn't finished loading. Once the
+  // real photo is in, the placeholder (and its label) is removed entirely so
+  // it never bleeds through beneath the image.
+  const showPlaceholder = !src || failed || !loaded;
+
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <div className={clsx('absolute inset-0 flex items-center justify-center bg-gradient-to-br', gradientFor(label || alt || src || 'vutto'))}>
-        <div className="flex flex-col items-center gap-1.5 px-3 text-center text-white/85">
-          <BikeGlyph className="h-9 w-9" />
-          {label && <span className="line-clamp-1 text-[11px] font-semibold">{label}</span>}
+      {showPlaceholder && (
+        <div className={clsx('absolute inset-0 flex items-center justify-center bg-gradient-to-br', gradientFor(label || alt || src || 'vutto'))}>
+          <div className="flex flex-col items-center gap-1.5 px-3 text-center text-white/85">
+            <BikeGlyph className="h-9 w-9" />
+            {label && <span className="line-clamp-1 text-[11px] font-semibold">{label}</span>}
+          </div>
         </div>
-      </div>
+      )}
       {src && !failed && (
         <img
           src={src}
