@@ -54,7 +54,12 @@ export default function MyListings() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="truncate font-bold">{v.title}</h3>
+                  <Link
+                    to={v.status === 'ACTIVE' ? `/buy/${v.slug}` : `/dashboard/listings/${v.id}/edit`}
+                    className="truncate font-bold transition hover:text-brand"
+                  >
+                    {v.title}
+                  </Link>
                   <ListingBadge status={v.status} />
                 </div>
                 <p className="mt-1 text-sm text-ink-muted">{v.year} · {formatKm(v.kmDriven)} · {v.city}</p>

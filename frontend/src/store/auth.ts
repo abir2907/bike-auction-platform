@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { authService } from '@/services/auth.service';
 import { setAccessToken } from '@/lib/api';
+import { disconnectSocket } from '@/lib/socket';
 import type { User } from '@/types';
 
 type Status = 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
@@ -33,6 +34,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   login: async (email, password) => {
+    // Drop any socket authenticated as a previous user so the next connection
+    // re-handshakes with the new token (otherwise bids go out as the old user).
+    disconnectSocket();
     const { user, accessToken } = await authService.login({ email, password });
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
@@ -40,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   register: async (input) => {
+    disconnectSocket();
     const { user, accessToken } = await authService.register(input);
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
@@ -50,6 +55,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await authService.logout();
     } finally {
+      disconnectSocket();
       setAccessToken(null);
       set({ user: null, status: 'unauthenticated' });
     }

@@ -24,6 +24,7 @@ import { formatINR, formatKm, ownerLabel } from '@/lib/format';
 export default function VehicleDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { savedIds, toggle } = useSaved();
+  const { user } = useAuthStore();
   const toast = useToast();
 
   const { data: vehicle, isLoading, isError } = useQuery({
@@ -154,7 +155,7 @@ export default function VehicleDetailPage() {
             </div>
 
             <SellerCard vehicle={vehicle} />
-            {!isAuction && <InquiryForm vehicleId={vehicle.id} vehicleTitle={vehicle.title} />}
+            {!isAuction && user?.role !== 'ADMIN' && <InquiryForm vehicleId={vehicle.id} vehicleTitle={vehicle.title} />}
           </aside>
         </div>
 

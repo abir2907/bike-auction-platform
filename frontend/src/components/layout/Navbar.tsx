@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/auth';
 import { Logo } from './Logo';
 import { LinkButton } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Avatar } from '@/components/ui/Avatar';
 
 const links = [
   { to: '/buy', label: 'Buy' },
@@ -52,15 +53,21 @@ export function Navbar() {
           <ThemeToggle />
           {status === 'authenticated' && user ? (
             <>
-              <LinkButton to="/dashboard/listings/new" variant="accent" size="sm">
-                <Gavel className="h-4 w-4" /> Sell your bike
-              </LinkButton>
+              {user.role === 'ADMIN' ? (
+                <LinkButton to="/admin" variant="dark" size="sm">
+                  <Shield className="h-4 w-4" /> Admin panel
+                </LinkButton>
+              ) : (
+                <LinkButton to="/dashboard/listings/new" variant="accent" size="sm">
+                  <Gavel className="h-4 w-4" /> Sell your bike
+                </LinkButton>
+              )}
               <div className="relative">
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
                   className="flex items-center gap-2 rounded-xl border border-line px-2.5 py-1.5 text-sm font-semibold hover:border-line-strong"
                 >
-                  <Avatar user={user} />
+                  <Avatar src={user.avatarUrl} name={user.name} className="h-7 w-7 rounded-lg text-xs" />
                   <span className="max-w-[100px] truncate">{user.name.split(' ')[0]}</span>
                   <ChevronDown className="h-4 w-4 text-ink-muted" />
                 </button>
@@ -68,20 +75,23 @@ export function Navbar() {
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
                     <div className="animate-fade-up absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-card p-1.5 shadow-card">
-                      <MenuLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
-                        Dashboard
-                      </MenuLink>
-                      <MenuLink to="/dashboard/saved" icon={<Heart className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
-                        Saved bikes
-                      </MenuLink>
-                      <MenuLink to="/dashboard/profile" icon={<UserIcon className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
-                        Profile
-                      </MenuLink>
-                      {user.role === 'ADMIN' && (
+                      {user.role === 'ADMIN' ? (
                         <MenuLink to="/admin" icon={<Shield className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
                           Admin panel
                         </MenuLink>
+                      ) : (
+                        <>
+                          <MenuLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
+                            Dashboard
+                          </MenuLink>
+                          <MenuLink to="/dashboard/saved" icon={<Heart className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
+                            Saved bikes
+                          </MenuLink>
+                        </>
                       )}
+                      <MenuLink to="/dashboard/profile" icon={<UserIcon className="h-4 w-4" />} onClick={() => setMenuOpen(false)}>
+                        Profile
+                      </MenuLink>
                       <button
                         onClick={handleLogout}
                         className="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-danger hover:bg-danger-soft"
@@ -130,16 +140,22 @@ export function Navbar() {
             <div className="mt-2 flex flex-col gap-2 border-t border-line pt-3">
               {status === 'authenticated' && user ? (
                 <>
-                  <LinkButton to="/dashboard" variant="outline" size="sm">
-                    Dashboard
-                  </LinkButton>
-                  {user.role === 'ADMIN' && (
-                    <LinkButton to="/admin" variant="outline" size="sm">
+                  {user.role === 'ADMIN' ? (
+                    <LinkButton to="/admin" variant="dark" size="sm">
                       Admin panel
                     </LinkButton>
+                  ) : (
+                    <>
+                      <LinkButton to="/dashboard" variant="outline" size="sm">
+                        Dashboard
+                      </LinkButton>
+                      <LinkButton to="/dashboard/listings/new" variant="accent" size="sm">
+                        Sell your bike
+                      </LinkButton>
+                    </>
                   )}
-                  <LinkButton to="/dashboard/listings/new" variant="accent" size="sm">
-                    Sell your bike
+                  <LinkButton to="/dashboard/profile" variant="ghost" size="sm">
+                    Profile
                   </LinkButton>
                   <button onClick={handleLogout} className="btn-ghost btn-sm text-danger">
                     Log out
@@ -160,15 +176,6 @@ export function Navbar() {
         </div>
       )}
     </header>
-  );
-}
-
-function Avatar({ user }: { user: { name: string; avatarUrl?: string | null } }) {
-  if (user.avatarUrl) return <img src={user.avatarUrl} alt="" className="h-7 w-7 rounded-lg object-cover" />;
-  return (
-    <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-50 text-xs font-bold text-brand">
-      {user.name.charAt(0).toUpperCase()}
-    </span>
   );
 }
 

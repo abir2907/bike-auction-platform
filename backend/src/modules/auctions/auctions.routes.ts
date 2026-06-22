@@ -18,7 +18,8 @@ router.get('/:id', validate(auctionIdSchema), asyncHandler(ctrl.getById));
 router.get('/:id/bids', validate(auctionIdSchema), asyncHandler(ctrl.getBids));
 
 // ── Authenticated bidding (REST fallback; primary path is WebSocket) ──
-router.post('/:id/bids', authenticate, validate(placeBidSchema), asyncHandler(ctrl.placeBid));
+// Only regular users can bid — admins are staff, not buyers.
+router.post('/:id/bids', authenticate, authorize('USER'), validate(placeBidSchema), asyncHandler(ctrl.placeBid));
 
 // ── Admin lifecycle ──
 router.post('/', authenticate, authorize('ADMIN'), validate(createAuctionSchema), asyncHandler(ctrl.create));

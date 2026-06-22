@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/Toast';
 import { getApiErrorMessage } from '@/lib/api';
 import { Input } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
+import { Avatar } from '@/components/ui/Avatar';
 
 export default function Profile() {
   const { user, setUser } = useAuthStore();
@@ -44,7 +45,21 @@ export default function Profile() {
             <Input label="Phone" {...profileForm.register('phone')} />
             <Input label="Email" value={user?.email ?? ''} disabled hint="Email cannot be changed." />
           </div>
-          <Input label="Avatar URL" placeholder="https://…" {...profileForm.register('avatarUrl')} />
+          <div className="flex items-center gap-4">
+            <Avatar
+              src={profileForm.watch('avatarUrl')}
+              name={user?.name ?? '?'}
+              className="h-16 w-16 shrink-0 rounded-2xl text-2xl"
+            />
+            <div className="flex-1">
+              <Input
+                label="Profile image URL"
+                placeholder="https://… (leave blank to use your initials)"
+                hint="Paste a link to an image. If empty or broken, your initials are shown."
+                {...profileForm.register('avatarUrl')}
+              />
+            </div>
+          </div>
           <div className="flex justify-end">
             <Button type="submit" loading={updateProfile.isPending}>Save changes</Button>
           </div>

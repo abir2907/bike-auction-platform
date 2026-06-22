@@ -112,11 +112,16 @@ export default function AuctionDetailPage() {
   const primary = v.images?.find((i) => i.isPrimary) ?? v.images?.[0];
   const isLive = statusVal === 'LIVE';
   const isSeller = user?.id === v.seller?.id;
+  const isAdmin = user?.role === 'ADMIN';
   const iAmWinner = winnerId && user?.id === winnerId;
 
   const submit = async () => {
     if (authStatus !== 'authenticated') {
       navigate('/login', { state: { from: `/auctions/${id}` } });
+      return;
+    }
+    if (isAdmin) {
+      toast('Admin accounts cannot place bids', 'error');
       return;
     }
     const value = Number(amount);
@@ -234,7 +239,11 @@ export default function AuctionDetailPage() {
               {/* Bid form */}
               {isLive && (
                 <div className="mt-5 border-t border-line pt-5">
-                  {isSeller ? (
+                  {isAdmin ? (
+                    <p className="rounded-xl bg-surface p-4 text-center text-sm text-ink-muted">
+                      Admin accounts cannot place bids.
+                    </p>
+                  ) : isSeller ? (
                     <p className="rounded-xl bg-surface p-4 text-center text-sm text-ink-muted">
                       You can't bid on your own vehicle.
                     </p>
