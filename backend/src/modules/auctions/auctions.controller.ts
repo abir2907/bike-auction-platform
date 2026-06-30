@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { created, ok } from '../../utils/response';
 import { audit } from '../../utils/audit';
-import { broadcastBid } from '../../realtime/auctionEvents';
+import { broadcastBid, broadcastStatus } from '../../realtime/auctionEvents';
 import * as svc from './auctions.service';
 
 export async function list(req: Request, res: Response) {
@@ -38,9 +38,36 @@ export async function placeBid(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-  const auction = await svc.createAuction(req.body);
+  const auction = await svc.createAuction(req.body, {
+    id: req.user!.id,
+    isAdmin: req.user!.role === 'ADMIN',
+  });
   audit({ userId: req.user!.id, action: 'AUCTION_CREATE', entity: 'Auction', entityId: auction.id, ip: req.ip });
   return created(res, auction);
+}
+
+/** REST fallback for direct buy (the primary path is the WebSocket). */
+export async function buyNow(req: Request, res: Response) {
+  const result = await svc.buyNow(req.params.id, req.user!.id);
+  broadcastBid(result);
+  broadcastStatus(result.auction.id, 'SETTLED', {
+    winnerId: result.auction.winnerId ?? null,
+    finalPrice: Number(result.auction.currentPrice),
+    reserveMet: result.auction.reserveMet,
+  });
+  audit({
+    userId: req.user!.id,
+    action: 'AUCTION_BUY_NOW',
+    entity: 'Auction',
+    entityId: req.params.id,
+    metadata: { amount: Number(result.auction.currentPrice) },
+    ip: req.ip,
+  });
+  return created(res, {
+    currentPrice: Number(result.auction.currentPrice),
+    status: result.auction.status,
+    winnerId: result.auction.winnerId,
+  });
 }
 
 export async function cancel(req: Request, res: Response) {

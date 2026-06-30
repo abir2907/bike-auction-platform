@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { Star, Trash2 } from 'lucide-react';
+import { Star, Trash2, Gavel } from 'lucide-react';
 import { clsx } from 'clsx';
 import { adminService } from '@/services/admin.service';
 import { useToast } from '@/components/ui/Toast';
@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Pagination } from '@/components/ui/Pagination';
 import { SmartImage } from '@/components/ui/SmartImage';
+import { CreateAuctionModal } from '@/components/auctions/CreateAuctionModal';
 import { formatINR } from '@/lib/format';
-import type { ListingStatus } from '@/types';
+import type { ListingStatus, Vehicle } from '@/types';
 
 const statuses: (ListingStatus | '')[] = ['', 'ACTIVE', 'PENDING', 'SOLD', 'ARCHIVED', 'REJECTED'];
 
@@ -21,6 +22,7 @@ export default function AdminVehicles() {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const [toDelete, setToDelete] = useState<string | null>(null);
+  const [auctionFor, setAuctionFor] = useState<Vehicle | null>(null);
 
   const { data } = useQuery({
     queryKey: ['admin-vehicles', status, page],
@@ -102,6 +104,15 @@ export default function AdminVehicles() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">
+                      {v.listingType === 'AUCTION' && !v.auction && (
+                        <button
+                          title="Create auction"
+                          onClick={() => setAuctionFor(v)}
+                          className="btn-ghost btn-sm text-brand"
+                        >
+                          <Gavel className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
                         title="Toggle featured"
                         onClick={() => moderate.mutate({ id: v.id, body: { featured: !v.featured } })}
@@ -128,6 +139,8 @@ export default function AdminVehicles() {
           <Button variant="danger" loading={del.isPending} onClick={() => toDelete && del.mutate(toDelete)}>Delete</Button>
         </div>
       </Modal>
+
+      <CreateAuctionModal vehicle={auctionFor} onClose={() => setAuctionFor(null)} />
     </div>
   );
 }

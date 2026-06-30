@@ -66,6 +66,7 @@ export interface Auction {
   vehicleId: string;
   startingPrice: string;
   reservePrice?: string | null;
+  buyNowPrice?: string | null;
   bidIncrement: string;
   currentPrice: string;
   startTime: string;

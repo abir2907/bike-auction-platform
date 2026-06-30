@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Pencil, Trash2, Plus, ListChecks, Eye } from 'lucide-react';
+import { Pencil, Trash2, Plus, ListChecks, Eye, Gavel } from 'lucide-react';
 import { vehiclesService } from '@/services/vehicles.service';
 import { useToast } from '@/components/ui/Toast';
 import { getApiErrorMessage } from '@/lib/api';
@@ -10,12 +10,15 @@ import { SmartImage } from '@/components/ui/SmartImage';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { PageLoader } from '@/components/ui/Spinner';
+import { CreateAuctionModal } from '@/components/auctions/CreateAuctionModal';
 import { formatINR, formatKm } from '@/lib/format';
+import type { Vehicle } from '@/types';
 
 export default function MyListings() {
   const qc = useQueryClient();
   const toast = useToast();
   const [toDelete, setToDelete] = useState<string | null>(null);
+  const [auctionFor, setAuctionFor] = useState<Vehicle | null>(null);
 
   const { data: listings = [], isLoading } = useQuery({ queryKey: ['my-listings'], queryFn: vehiclesService.mine });
 
@@ -67,6 +70,9 @@ export default function MyListings() {
                 <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-muted"><Eye className="h-3.5 w-3.5" /> {v.viewCount} views</p>
               </div>
               <div className="flex gap-2 sm:flex-col lg:flex-row">
+                {v.listingType === 'AUCTION' && !v.auction && (
+                  <button onClick={() => setAuctionFor(v)} className="btn-accent btn-sm"><Gavel className="h-4 w-4" /> Create auction</button>
+                )}
                 <Link to={`/dashboard/listings/${v.id}/edit`} className="btn-outline btn-sm"><Pencil className="h-4 w-4" /> Edit</Link>
                 <button onClick={() => setToDelete(v.id)} className="btn-ghost btn-sm text-danger"><Trash2 className="h-4 w-4" /> Delete</button>
               </div>
@@ -82,6 +88,8 @@ export default function MyListings() {
           <Button variant="danger" loading={del.isPending} onClick={() => toDelete && del.mutate(toDelete)}>Delete</Button>
         </div>
       </Modal>
+
+      <CreateAuctionModal vehicle={auctionFor} onClose={() => setAuctionFor(null)} />
     </div>
   );
 }

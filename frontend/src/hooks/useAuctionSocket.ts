@@ -79,5 +79,20 @@ export function useAuctionSocket(auctionId: string | undefined, opts: Options) {
     [auctionId],
   );
 
-  return { connected, placeBid };
+  const buyNow = useCallback(
+    (): Promise<{ ok: boolean; error?: string; currentPrice?: number }> =>
+      new Promise((resolve) => {
+        const socket = getSocket();
+        if (!socket.connected) socket.connect();
+        socket
+          .timeout(8000)
+          .emit('buy:now', { auctionId }, (err: unknown, res: { ok: boolean; error?: string; currentPrice?: number }) => {
+            if (err) return resolve({ ok: false, error: 'Connection timed out. Try again.' });
+            resolve(res);
+          });
+      }),
+    [auctionId],
+  );
+
+  return { connected, placeBid, buyNow };
 }

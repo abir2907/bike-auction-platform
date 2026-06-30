@@ -161,20 +161,28 @@ export async function placeBid(
 
 // ── Admin / lifecycle ────────────────────────────────────────────────────────
 
-export async function createAuction(input: {
-  vehicleId: string;
-  startingPrice: number;
-  reservePrice?: number;
-  bidIncrement: number;
-  startTime: Date;
-  endTime: Date;
-  antiSnipeSeconds: number;
-}) {
+export async function createAuction(
+  input: {
+    vehicleId: string;
+    startingPrice: number;
+    reservePrice?: number;
+    buyNowPrice?: number;
+    bidIncrement: number;
+    startTime: Date;
+    endTime: Date;
+    antiSnipeSeconds: number;
+  },
+  creator: { id: string; isAdmin: boolean },
+) {
   const vehicle = await prisma.vehicle.findUnique({
     where: { id: input.vehicleId },
     include: { auction: true },
   });
   if (!vehicle) throw ApiError.notFound('Vehicle not found');
+  // Sellers may only auction their own vehicles; admins may auction any.
+  if (!creator.isAdmin && vehicle.sellerId !== creator.id) {
+    throw ApiError.forbidden('You can only create auctions for your own listings');
+  }
   if (vehicle.auction) throw ApiError.conflict('This vehicle already has an auction');
 
   return prisma.$transaction(async (tx) => {
@@ -187,6 +195,7 @@ export async function createAuction(input: {
         vehicleId: input.vehicleId,
         startingPrice: input.startingPrice,
         reservePrice: input.reservePrice,
+        buyNowPrice: input.buyNowPrice,
         bidIncrement: input.bidIncrement,
         currentPrice: input.startingPrice,
         startTime: input.startTime,
@@ -197,6 +206,85 @@ export async function createAuction(input: {
       include: auctionInclude,
     });
   });
+}
+
+/**
+ * Direct buy ("buy now"): purchase the vehicle instantly at the auction's
+ * `buyNowPrice`, ending the auction immediately. Like {@link placeBid} it runs
+ * under a `FOR UPDATE` row lock so it can't race with concurrent bids — whoever
+ * acquires the lock first wins, and once the auction is SETTLED no further bid
+ * or buy-now can succeed. Returns the same shape as a bid so the realtime layer
+ * can broadcast it identically.
+ */
+export async function buyNow(auctionId: string, buyerId: string): Promise<PlaceBidResult> {
+  const now = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM auctions WHERE id = ${auctionId} FOR UPDATE`;
+
+    const auction = await tx.auction.findUnique({
+      where: { id: auctionId },
+      include: { vehicle: { select: { sellerId: true } } },
+    });
+    if (!auction) throw ApiError.notFound('Auction not found');
+    if (auction.buyNowPrice == null) {
+      throw ApiError.badRequest('Direct buy is not available for this auction');
+    }
+    if (auction.status !== 'LIVE') throw ApiError.badRequest('This auction is not currently live');
+    if (now < auction.startTime || now >= auction.endTime) {
+      throw ApiError.badRequest('This auction is not accepting purchases right now');
+    }
+    if (auction.vehicle.sellerId === buyerId) {
+      throw ApiError.forbidden('You cannot buy your own vehicle');
+    }
+
+    const buyNowPrice = Number(auction.buyNowPrice);
+    // If live bidding has already reached the buy-now price, direct buy no
+    // longer makes sense — the bidder must win it on price.
+    if (Number(auction.currentPrice) >= buyNowPrice) {
+      throw ApiError.badRequest('Bidding has already reached the direct buy price');
+    }
+
+    // Record the purchase as the winning bid (keeps a single source of truth
+    // for "who won and at what price").
+    await tx.bid.create({ data: { auctionId, bidderId: buyerId, amount: buyNowPrice } });
+
+    await tx.auction.update({
+      where: { id: auctionId },
+      data: {
+        currentPrice: buyNowPrice,
+        totalBids: { increment: 1 },
+        winnerId: buyerId,
+        reserveMet: true, // a direct buy always meets/clears the reserve
+        status: 'SETTLED',
+        endTime: now,
+      },
+    });
+
+    await tx.vehicle.update({ where: { id: auction.vehicleId }, data: { status: 'SOLD' } });
+    logger.info({ auctionId, buyerId, buyNowPrice }, 'Auction sold via direct buy');
+  });
+
+  const [auction, buyer] = await Promise.all([
+    getById(auctionId),
+    prisma.user.findUnique({ where: { id: buyerId }, select: { name: true } }),
+  ]);
+  const latest = await prisma.bid.findFirst({
+    where: { auctionId, bidderId: buyerId },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return {
+    auction,
+    bid: {
+      id: latest!.id,
+      amount: Number(auction.currentPrice),
+      bidderId: buyerId,
+      bidderName: buyer?.name ?? 'Buyer',
+      createdAt: latest!.createdAt,
+    },
+    extended: false,
+  };
 }
 
 export async function cancelAuction(id: string) {

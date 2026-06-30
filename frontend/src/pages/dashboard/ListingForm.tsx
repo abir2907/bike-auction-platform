@@ -124,7 +124,7 @@ export default function ListingForm() {
             <Input label="Price (₹)" type="number" error={errors.price?.message} {...register('price', { required: 'Required', valueAsNumber: true })} />
           </div>
           <Textarea label="Description" rows={5} placeholder="Describe condition, service history, accessories…" error={errors.description?.message} {...register('description', { required: 'Required', minLength: { value: 20, message: 'At least 20 characters' } })} />
-          <Select label="Listing type" {...register('listingType')} options={[{ value: 'SALE', label: 'Fixed price (Buy now)' }, { value: 'AUCTION', label: 'Auction (admin will schedule)' }]} />
+          <Select label="Listing type" {...register('listingType')} options={[{ value: 'SALE', label: 'Fixed price (Buy now)' }, { value: 'AUCTION', label: 'Auction (schedule it from My listings)' }]} />
         </section>
 
         <section className="card space-y-4 p-6">
