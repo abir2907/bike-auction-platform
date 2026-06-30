@@ -21,6 +21,9 @@ export const createAuctionSchema = z.object({
       vehicleId: z.string().uuid(),
       startingPrice: z.number().positive(),
       reservePrice: z.number().positive().optional(),
+      // Optional "direct buy" price — when set, buyers can purchase instantly
+      // at this amount instead of bidding. Omitted/undefined = not available.
+      buyNowPrice: z.number().positive().optional(),
       bidIncrement: z.number().positive().default(500),
       startTime: z.coerce.date(),
       endTime: z.coerce.date(),
@@ -33,5 +36,13 @@ export const createAuctionSchema = z.object({
     .refine((d) => !d.reservePrice || d.reservePrice >= d.startingPrice, {
       message: 'reservePrice must be >= startingPrice',
       path: ['reservePrice'],
+    })
+    .refine((d) => !d.buyNowPrice || d.buyNowPrice > d.startingPrice, {
+      message: 'Direct buy price must be greater than the starting price',
+      path: ['buyNowPrice'],
+    })
+    .refine((d) => !d.buyNowPrice || !d.reservePrice || d.buyNowPrice >= d.reservePrice, {
+      message: 'Direct buy price must be at least the reserve price',
+      path: ['buyNowPrice'],
     }),
 });

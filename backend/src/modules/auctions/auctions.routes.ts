@@ -21,8 +21,13 @@ router.get('/:id/bids', validate(auctionIdSchema), asyncHandler(ctrl.getBids));
 // Only regular users can bid — admins are staff, not buyers.
 router.post('/:id/bids', authenticate, authorize('USER'), validate(placeBidSchema), asyncHandler(ctrl.placeBid));
 
-// ── Admin lifecycle ──
-router.post('/', authenticate, authorize('ADMIN'), validate(createAuctionSchema), asyncHandler(ctrl.create));
+// ── Direct buy ("buy now"). Only regular users can purchase. ──
+router.post('/:id/buy-now', authenticate, authorize('USER'), validate(auctionIdSchema), asyncHandler(ctrl.buyNow));
+
+// ── Lifecycle ──
+// Creating an auction is allowed for the vehicle's owner (seller) or an admin;
+// ownership is enforced in the service. Cancelling stays admin-only.
+router.post('/', authenticate, authorize('USER', 'ADMIN'), validate(createAuctionSchema), asyncHandler(ctrl.create));
 router.post('/:id/cancel', authenticate, authorize('ADMIN'), validate(auctionIdSchema), asyncHandler(ctrl.cancel));
 
 export default router;

@@ -188,6 +188,7 @@ model Auction {
   vehicleId        String        @unique
   startingPrice    Decimal       @db.Decimal(12, 2)
   reservePrice     Decimal?      @db.Decimal(12, 2) // hidden minimum to sell
+  buyNowPrice      Decimal?      @db.Decimal(12, 2) // optional "direct buy" price; null = not available
   bidIncrement     Decimal       @db.Decimal(12, 2) @default(500)
   currentPrice     Decimal       @db.Decimal(12, 2) // highest valid bid (or starting)
   startTime        DateTime

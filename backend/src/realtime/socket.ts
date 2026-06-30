@@ -6,7 +6,7 @@ import { verifyAccessToken } from '../utils/jwt';
 import { ApiError } from '../utils/ApiError';
 import { audit } from '../utils/audit';
 import { auctionRoom, setIo } from './io';
-import { broadcastBid } from './auctionEvents';
+import { broadcastBid, broadcastStatus } from './auctionEvents';
 import * as auctionService from '../modules/auctions/auctions.service';
 
 interface SocketUser {
@@ -89,6 +89,38 @@ export function initSocket(httpServer: HttpServer): Server {
           const message = err instanceof ApiError ? err.message : 'Could not place bid';
           ack?.({ ok: false, error: message });
           // Also push a private rejection event for clients not using acks.
+          socket.emit('bid:rejected', { auctionId: payload?.auctionId, error: message });
+        }
+      },
+    );
+
+    socket.on(
+      'buy:now',
+      async (
+        payload: { auctionId: string },
+        ack?: (res: { ok: boolean; error?: string; currentPrice?: number }) => void,
+      ) => {
+        try {
+          if (!payload || !payload.auctionId) throw ApiError.badRequest('Invalid buy-now payload');
+          if (user.role === 'ADMIN') throw ApiError.forbidden('Admins cannot buy vehicles');
+          const result = await auctionService.buyNow(payload.auctionId, user.id);
+          broadcastBid(result);
+          broadcastStatus(result.auction.id, 'SETTLED', {
+            winnerId: result.auction.winnerId ?? null,
+            finalPrice: Number(result.auction.currentPrice),
+            reserveMet: result.auction.reserveMet,
+          });
+          audit({
+            userId: user.id,
+            action: 'AUCTION_BUY_NOW',
+            entity: 'Auction',
+            entityId: payload.auctionId,
+            metadata: { amount: Number(result.auction.currentPrice), via: 'ws' },
+          });
+          ack?.({ ok: true, currentPrice: Number(result.auction.currentPrice) });
+        } catch (err) {
+          const message = err instanceof ApiError ? err.message : 'Could not complete purchase';
+          ack?.({ ok: false, error: message });
           socket.emit('bid:rejected', { auctionId: payload?.auctionId, error: message });
         }
       },

@@ -21,11 +21,18 @@ export const auctionsService = {
     );
     return data.data;
   },
-  // Admin
+  async buyNow(id: string) {
+    const { data } = await api.post<{ data: { currentPrice: number; status: string; winnerId: string | null } }>(
+      `/auctions/${id}/buy-now`,
+    );
+    return data.data;
+  },
+  // Created by the vehicle's owner (seller) or an admin.
   async create(input: {
     vehicleId: string;
     startingPrice: number;
     reservePrice?: number;
+    buyNowPrice?: number;
     bidIncrement: number;
     startTime: string;
     endTime: string;

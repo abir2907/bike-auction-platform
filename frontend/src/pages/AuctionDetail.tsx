@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Gavel, Users, Wifi, WifiOff, Trophy, ShieldCheck, MapPin, Clock, TrendingUp, Lock,
+  Gavel, Users, Wifi, WifiOff, Trophy, ShieldCheck, MapPin, Clock, TrendingUp, Lock, ShoppingBag,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { auctionsService } from '@/services/auctions.service';
@@ -13,6 +13,7 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { EmptyState, AuctionBadge } from '@/components/ui/Misc';
 import { SmartImage } from '@/components/ui/SmartImage';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { CountdownBoxes } from '@/components/auctions/Countdown';
 import { formatINR, timeAgo } from '@/lib/format';
 import type { Bid } from '@/types';
@@ -50,6 +51,8 @@ export default function AuctionDetailPage() {
   const [bids, setBids] = useState<LiveBid[]>([]);
   const [amount, setAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [confirmBuy, setConfirmBuy] = useState(false);
+  const [buying, setBuying] = useState(false);
 
   useEffect(() => {
     if (!auction) return;
@@ -88,7 +91,7 @@ export default function AuctionDetailPage() {
     }
   };
 
-  const { connected, placeBid } = useAuctionSocket(id, { onBid, onStatus });
+  const { connected, placeBid, buyNow } = useAuctionSocket(id, { onBid, onStatus });
 
   const bidIncrement = auction ? Number(auction.bidIncrement) : 500;
   const minNextBid = useMemo(
@@ -137,6 +140,30 @@ export default function AuctionDetailPage() {
   };
 
   const quickAdds = [bidIncrement, bidIncrement * 2, bidIncrement * 5];
+
+  // Direct buy ("buy now") is offered only when the seller set a price, the
+  // auction is live, and bidding hasn't already reached that price.
+  const buyNowPrice = auction.buyNowPrice ? Number(auction.buyNowPrice) : null;
+  const buyNowAvailable = buyNowPrice != null && isLive && currentPrice < buyNowPrice;
+
+  const doBuyNow = async () => {
+    if (authStatus !== 'authenticated') {
+      navigate('/login', { state: { from: `/auctions/${id}` } });
+      return;
+    }
+    setBuying(true);
+    const res = await buyNow();
+    setBuying(false);
+    setConfirmBuy(false);
+    if (res.ok) {
+      toast('Purchased! The bike is yours.', 'success');
+      setStatusVal('SETTLED');
+      setWinnerId(user?.id ?? null);
+      if (res.currentPrice) setCurrentPrice(res.currentPrice);
+    } else {
+      toast(res.error || 'Could not complete purchase', 'error');
+    }
+  };
 
   return (
     <div className="bg-surface">
@@ -279,6 +306,28 @@ export default function AuctionDetailPage() {
                         <Gavel className="h-4 w-4" />
                         {authStatus === 'authenticated' ? 'Place bid' : 'Log in to bid'}
                       </Button>
+
+                      {buyNowAvailable && (
+                        <div className="mt-4 border-t border-line pt-4">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-semibold text-ink-soft">Skip the bidding</span>
+                            <span className="font-extrabold tabular-nums text-ink">{formatINR(buyNowPrice!)}</span>
+                          </div>
+                          <Button
+                            onClick={() => (authStatus === 'authenticated' ? setConfirmBuy(true) : doBuyNow())}
+                            fullWidth
+                            size="lg"
+                            variant="primary"
+                            className="mt-2"
+                          >
+                            <ShoppingBag className="h-4 w-4" />
+                            {authStatus === 'authenticated' ? `Buy now at ${formatINR(buyNowPrice!)}` : 'Log in to buy now'}
+                          </Button>
+                          <p className="mt-1.5 text-center text-xs text-ink-muted">
+                            Buy instantly and end the auction at this price.
+                          </p>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -307,6 +356,20 @@ export default function AuctionDetailPage() {
           </aside>
         </div>
       </div>
+
+      <Modal open={confirmBuy} onClose={() => setConfirmBuy(false)} title="Confirm direct buy" size="sm">
+        <p className="text-sm text-ink-soft">
+          You're about to buy <strong>{v.title}</strong> instantly for{' '}
+          <strong>{buyNowPrice != null ? formatINR(buyNowPrice) : ''}</strong>. This ends the auction and
+          marks you as the winner.
+        </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setConfirmBuy(false)}>Cancel</Button>
+          <Button variant="primary" loading={buying} onClick={doBuyNow}>
+            <ShoppingBag className="h-4 w-4" /> Confirm purchase
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
